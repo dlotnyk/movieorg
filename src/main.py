@@ -14,7 +14,6 @@ class ParseFiles:
         self._name = tb_item.name
         self._surname = tb_item.surname
         self._files: str = ""
-        print(f" parsing for {tb_item.name}, {tb_item.surname}")
 
     def __repr__(self):
         return "ParseFiles_" + self.name + "_" + self.surname
@@ -60,10 +59,9 @@ if __name__ == "__main__":
     datab = LocalDb(db_name=local_db_name)
     datab.open_session()
     for table_item in datab.select_all:
-        # CreateTree(tb_item=table_item).create_dir()
         for movie in ParseFiles(tb_item=table_item).find_equals():
             CreateTree(tb_item=table_item,
-                       filename=movie[0]).copy_file(movie[1])
+                       filename=movie[0]).main(movie[1])
     datab.close_session()
     datab.close_engine()
     app_log.info("Main app ends.")

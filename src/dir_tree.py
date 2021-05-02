@@ -48,6 +48,10 @@ class CreateTree:
         else:
             app_log.debug(f"File `{self.filename}` already exists")
 
+    def main(self, path_from):
+        self.create_dir()
+        self.copy_file(path_from)
+
 
 if __name__ == "__main__":
     app_log.info("Create Dir Tree app starts.")
