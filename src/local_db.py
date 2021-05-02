@@ -8,14 +8,13 @@ from logger import log_settings
 from table_scheme import MainTable, main_table_name, Base
 
 app_log = log_settings()
-
+local_db_name = "movie.db"
 
 class LocalDb:
     """
     local db based of sqlite3
     """
     _table_name = main_table_name
-    _local_path = "k:\\data\\paper_dtdt\\some_other\\"
 
     def __init__(self, db_name: str) -> None:
         try:
@@ -91,19 +90,15 @@ class LocalDb:
 
     @property
     def select_all(self):
-        query = self._session.query(MainTable).order_by(MainTable.id).all()
-        for item in query:
-            print(item.name, item.surname)
         return self._session.query(MainTable).all()
 
 
 if __name__ == "__main__":
     app_log.info("Create db app starts.")
-    a = LocalDb("test.db")
+    a = LocalDb(local_db_name)
     a.create_main_table()
     a.open_session()
-    a.insert_entry("dima", "best")
-    print(a.select_all)
+    a.insert_entry("emma", "hix")
     a.close_session()
     a.close_engine()
     app_log.info("Create db app ends")
