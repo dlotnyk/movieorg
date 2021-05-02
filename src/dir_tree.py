@@ -1,4 +1,5 @@
 import os
+from shutil import copy
 from local_db import LocalDb, local_db_name
 from logger import log_settings
 
@@ -6,13 +7,18 @@ app_log = log_settings()
 
 
 class CreateTree:
-    def __init__(self, db_item):
+    def __init__(self, tb_item, filename=None):
         self._new_local_path = "k:\\data\\paper_dtdt\\org_dir\\"
-        self._name = db_item.name
-        self._surname = db_item.surname
+        self._name = tb_item.name
+        self._surname = tb_item.surname
+        self.filename = filename
 
     def __repr__(self):
        return "CreateTree_" + self.name + "_" + self.surname
+
+    @property
+    def fullpath(self):
+        return os.path.join(self.get_dir_name, self.filename)
 
     @property
     def name(self):
@@ -35,13 +41,20 @@ class CreateTree:
         else:
             app_log.debug(f"Directory `{self.get_dir_name}` already exists")
 
+    def copy_file(self, path_from):
+        if not os.path.isfile(self.fullpath):
+            copy(path_from, self.fullpath)
+            app_log.info(f"File `{path_from}` copied")
+        else:
+            app_log.debug(f"File `{self.filename}` already exists")
+
 
 if __name__ == "__main__":
     app_log.info("Create Dir Tree app starts.")
     datab = LocalDb(db_name=local_db_name)
     datab.open_session()
     for item in datab.select_all:
-        a = CreateTree(db_item=item)
+        a = CreateTree(tb_item=item)
         a.create_dir()
     datab.close_session()
     datab.close_engine()

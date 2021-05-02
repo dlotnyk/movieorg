@@ -98,7 +98,6 @@ if __name__ == "__main__":
     a = LocalDb(local_db_name)
     a.create_main_table()
     a.open_session()
-    a.insert_entry("emma", "hix")
     a.close_session()
     a.close_engine()
     app_log.info("Create db app ends")
