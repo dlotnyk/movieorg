@@ -20,9 +20,10 @@ class LocalDb:
     def __init__(self, db_name: str) -> None:
         try:
             self.db_name = db_name
+            self._session = None
             cur_path = os.path.dirname(os.getcwd())
-            self.db_path = os.path.join(cur_path, db_name)
-            connector = "sqlite:///" + self.db_path
+            db_path = os.path.join(cur_path, db_name)
+            connector = "sqlite:///" + db_path
             self._db_engine = db.create_engine(connector)
             app_log.debug(f"Engine creates for {db_name}")
         except Exception as ex:
@@ -36,11 +37,73 @@ class LocalDb:
         metadata = db.MetaData()
         self.main_tb = db.Table(self._table_name, metadata,
                                 db.Column("id", db.Integer, primary_key=True, autoincrement=True),
-                                db.Column("name"), db.String,
-                                db.Column("surname")
+                                db.Column("name", db.String),
+                                db.Column("surname", db.String)
                                 )
         try:
-            Base.metadate.create_all(self.db_engine)
+            Base.metadata.create_all(self.db_engine)
             app_log.debug(f"Table `{self._table_name}` was created")
         except Exception as ex:
             app_log.error(f"Can not create table: `{ex}`")
+
+    def open_session(self):
+        """
+        Opens the local db
+        """
+        try:
+            sess = sessionmaker(bind=self.db_engine)
+            self._session = sess()
+            app_log.debug(f"Session creates for: `{self.db_name}` ")
+        except Exception as ex:
+            app_log.error(f"Can not create session: {ex}")
+
+    def close_session(self):
+        """
+        Close connection to db
+        """
+        try:
+            if self._session is not None:
+                self._session.close()
+                app_log.debug(f"Session `{self.db_name}` closed ")
+        except Exception as ex:
+            app_log.error(f"Can not close session: {ex}")
+
+    def close_engine(self):
+        """
+        Close the db engine
+        """
+        try:
+            self.db_engine.dispose()
+            app_log.debug("db Engine disposed ")
+        except Exception as ex:
+            app_log.error(f"Engine NOT disposed: {ex}")
+
+    def insert_entry(self, name: str, surname: str):
+        try:
+            data = MainTable(name=name,
+                             surname=surname)
+            self._session.add(data)
+        except Exception as ex:
+            app_log.error(f"Can not insert into main table: {ex}")
+        else:
+            self._session.commit()
+            app_log.debug(f"Data committed to `{MainTable.__tablename__}`")
+
+    @property
+    def select_all(self):
+        query = self._session.query(MainTable).order_by(MainTable.id).all()
+        for item in query:
+            print(item.name, item.surname)
+        return self._session.query(MainTable).all()
+
+
+if __name__ == "__main__":
+    app_log.info("Create db app starts.")
+    a = LocalDb("test.db")
+    a.create_main_table()
+    a.open_session()
+    a.insert_entry("dima", "best")
+    print(a.select_all)
+    a.close_session()
+    a.close_engine()
+    app_log.info("Create db app ends")
