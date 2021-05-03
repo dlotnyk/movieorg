@@ -43,21 +43,22 @@ class CreateTree:
             app_log.debug(f"Directory `{self.get_dir_name}` already exists")
 
     def copy_file(self, path_from, delete_from=False):
+        path_log = path_from.encode("utf-8")
         try:
             if not os.path.isfile(self.fullpath):
                 start_time = time.time()
                 copy(path_from, self.fullpath)
                 dur = time.time() - start_time
-                app_log.info(f"File `{path_from}` copied for `{dur}` s")
+                app_log.info(f"File `{path_log}` copied for `{dur}` s")
             elif os.path.isfile(self.fullpath) and delete_from:
                 os.remove(path_from)
-                app_log.info(f"File `{path_from}` deleted")
+                app_log.info(f"File `{path_log}` deleted")
             else:
                 app_log.debug(f"File `{self.filename}` already exists")
         except (UnicodeEncodeError, UnicodeError):
             app_log.error(f"can not log the entry")
 
-    def main(self, path_from, delete_from=False):
+    def main(self, path_from: str, delete_from=False):
         self.create_dir()
         self.copy_file(path_from, delete_from)
 
