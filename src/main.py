@@ -61,7 +61,8 @@ if __name__ == "__main__":
     for table_item in datab.select_all:
         for movie in ParseFiles(tb_item=table_item).find_equals():
             CreateTree(tb_item=table_item,
-                       filename=movie[0]).main(movie[1])
+                       filename=movie[0]).main(path_from=movie[1],
+                                               delete_from=True)
     datab.close_session()
     datab.close_engine()
     app_log.info("Main app ends.")

@@ -10,6 +10,7 @@ from table_scheme import MainTable, main_table_name, Base
 app_log = log_settings()
 local_db_name = "movie.db"
 
+
 class LocalDb:
     """
     local db based of sqlite3

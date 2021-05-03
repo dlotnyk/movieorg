@@ -1,5 +1,6 @@
 import os
 from shutil import copy
+import time
 from local_db import LocalDb, local_db_name
 from logger import log_settings
 
@@ -41,16 +42,24 @@ class CreateTree:
         else:
             app_log.debug(f"Directory `{self.get_dir_name}` already exists")
 
-    def copy_file(self, path_from):
-        if not os.path.isfile(self.fullpath):
-            copy(path_from, self.fullpath)
-            app_log.info(f"File `{path_from}` copied")
-        else:
-            app_log.debug(f"File `{self.filename}` already exists")
+    def copy_file(self, path_from, delete_from=False):
+        try:
+            if not os.path.isfile(self.fullpath):
+                start_time = time.time()
+                copy(path_from, self.fullpath)
+                dur = time.time() - start_time
+                app_log.info(f"File `{path_from}` copied for `{dur}` s")
+            elif os.path.isfile(self.fullpath) and delete_from:
+                os.remove(path_from)
+                app_log.info(f"File `{path_from}` deleted")
+            else:
+                app_log.debug(f"File `{self.filename}` already exists")
+        except (UnicodeEncodeError, UnicodeError):
+            app_log.error(f"can not log the entry")
 
-    def main(self, path_from):
+    def main(self, path_from, delete_from=False):
         self.create_dir()
-        self.copy_file(path_from)
+        self.copy_file(path_from, delete_from)
 
 
 if __name__ == "__main__":
