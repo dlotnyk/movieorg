@@ -1,12 +1,10 @@
 import os
 from shutil import copy
 import time
-from concurrent.futures import ThreadPoolExecutor, TimeoutError
+from concurrent.futures import ThreadPoolExecutor
 from local_db import LocalDb, local_db_name
 from logger import log_settings
 from typing import List, Dict, Set
-# from multiprocessing import Pool, TimeoutError
-# from multiprocessing.pool import ThreadPool
 
 app_log = log_settings()
 
@@ -21,9 +19,6 @@ class CreateTree:
 
     def __init__(self):
         self._new_local_path: str = "k:\\data\\paper_dtdt\\org_dir\\"
-        # self._name = tb_item.name
-        # self._surname = tb_item.surname
-        # self.filename = filename
         self._new_list: List[Dict] = list()
         self._old_set: Set = set()
 
