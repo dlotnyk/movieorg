@@ -1,4 +1,5 @@
 import os
+from pprint import pprint
 from typing import List, Tuple
 
 from logger import log_settings
@@ -58,11 +59,14 @@ if __name__ == "__main__":
     app_log.info("Main app starts.")
     datab = LocalDb(db_name=local_db_name)
     datab.open_session()
+    inst = CreateTree()
     for table_item in datab.select_all:
         for movie in ParseFiles(tb_item=table_item).find_equals():
-            CreateTree(tb_item=table_item,
-                       filename=movie[0]).main(path_from=movie[1],
-                                               delete_from=True)
+            inst.main(tb_item=table_item,
+                      filename=movie[0],
+                      path_from=movie[1])
+    inst.copy_pool()
+    inst.remove_set()
     datab.close_session()
     datab.close_engine()
     app_log.info("Main app ends.")
